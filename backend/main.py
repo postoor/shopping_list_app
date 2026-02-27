@@ -1,11 +1,21 @@
+import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.database import engine, Base
 from app.routers import (
-    auth_router, friends_router, items_router,
-    groups_router, plans_router,
+    auth_router,
+    friends_router,
+    items_router,
+    groups_router,
+    plans_router,
+)
+
+# ── Logging ───────────────────────────────────────────────────────────────
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 
 app = FastAPI(
@@ -26,11 +36,11 @@ app.add_middleware(
 
 # ── 路由 ──────────────────────────────────────────────────────────────────
 API_PREFIX = "/api/v1"
-app.include_router(auth_router,    prefix=API_PREFIX)
+app.include_router(auth_router, prefix=API_PREFIX)
 app.include_router(friends_router, prefix=API_PREFIX)
-app.include_router(items_router,   prefix=API_PREFIX)
-app.include_router(groups_router,  prefix=API_PREFIX)
-app.include_router(plans_router,   prefix=API_PREFIX)
+app.include_router(items_router, prefix=API_PREFIX)
+app.include_router(groups_router, prefix=API_PREFIX)
+app.include_router(plans_router, prefix=API_PREFIX)
 
 
 @app.on_event("startup")

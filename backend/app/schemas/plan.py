@@ -3,20 +3,20 @@ from uuid import UUID
 from datetime import date, datetime
 from decimal import Decimal
 from pydantic import BaseModel, Field
-from app.models.plan import PlanStatus
+from app.models.plan import PlanStatus, PlanSharePermission
 
 
 class PlanCreate(BaseModel):
-    name:      str = Field(min_length=1, max_length=200)
+    name: str = Field(min_length=1, max_length=200)
     exec_date: date | None = None
-    group_id:  UUID | None = None
-    item_ids:  list[UUID] = []      # 加入計畫的物品 IDs
+    group_id: UUID | None = None
+    item_ids: list[UUID] = []  # 加入計畫的物品 IDs
 
 
 class PlanUpdate(BaseModel):
-    name:      str | None = Field(default=None, max_length=200)
+    name: str | None = Field(default=None, max_length=200)
     exec_date: date | None = None
-    status:    PlanStatus | None = None
+    status: PlanStatus | None = None
 
 
 class PlanItemToggle(BaseModel):
@@ -24,7 +24,7 @@ class PlanItemToggle(BaseModel):
 
 
 class PlanItemOut(BaseModel):
-    id:      UUID
+    id: UUID
     item_id: UUID
     is_done: bool
 
@@ -32,27 +32,43 @@ class PlanItemOut(BaseModel):
 
 
 class PlanOut(BaseModel):
-    id:           UUID
-    name:         str
-    creator_id:   UUID
-    group_id:     UUID | None
-    exec_date:    date | None
-    status:       PlanStatus
-    created_at:   datetime
+    id: UUID
+    name: str
+    creator_id: UUID
+    group_id: UUID | None
+    exec_date: date | None
+    status: PlanStatus
+    created_at: datetime
     completed_at: datetime | None
-    plan_items:   list[PlanItemOut] = []
+    plan_items: list[PlanItemOut] = []
+    is_shared: bool = False  # 是否為被分享的計畫
 
     model_config = {"from_attributes": True}
 
 
 class PurchaseRecordOut(BaseModel):
-    id:           UUID
-    plan_id:      UUID
-    item_name:    str
-    quantity:     int
+    id: UUID
+    plan_id: UUID
+    item_name: str
+    quantity: int
     actual_price: Decimal | None
-    category:     str | None
-    note:         str | None
+    category: str | None
+    note: str | None
     purchased_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class PlanShareCreate(BaseModel):
+    shared_with: UUID
+    permission: PlanSharePermission = PlanSharePermission.view
+
+
+class PlanShareOut(BaseModel):
+    id: UUID
+    plan_id: UUID
+    shared_with: UUID
+    permission: PlanSharePermission
+    created_at: datetime
 
     model_config = {"from_attributes": True}

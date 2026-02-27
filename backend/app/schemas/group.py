@@ -15,10 +15,20 @@ class GroupUpdate(BaseModel):
 
 class GroupMemberOut(BaseModel):
     user_id:   UUID
+    user_name: str | None = None
     role:      GroupRole
     joined_at: datetime
 
     model_config = {"from_attributes": True}
+
+    @classmethod
+    def from_member(cls, member):
+        return cls(
+            user_id=member.user_id,
+            user_name=member.user.name if member.user else None,
+            role=member.role,
+            joined_at=member.joined_at,
+        )
 
 
 class GroupMemberAdd(BaseModel):

@@ -85,7 +85,7 @@ async function removeMember(groupId, userId) {
         <div class="space-y-2 mb-4">
           <div v-for="member in group.members" :key="member.user_id"
             class="flex items-center justify-between text-sm py-1.5 border-b border-gray-50 last:border-0">
-            <span class="text-gray-700">{{ member.user_id }}</span>
+            <span class="text-gray-700">{{ member.user_name || member.user_id }}</span>
             <div class="flex items-center gap-2">
               <span class="text-xs text-gray-400 capitalize">{{ member.role }}</span>
               <button @click="removeMember(group.id, member.user_id)"

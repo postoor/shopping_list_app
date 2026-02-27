@@ -15,6 +15,7 @@ const sharingItem = ref(null)
 const filterStatus   = ref('all')
 const filterCategory = ref('all')
 const search      = ref('')
+const hideCompleted  = ref(true)
 
 onMounted(() => {
   itemsStore.fetchItems()
@@ -26,7 +27,8 @@ const filteredItems = computed(() => {
     const matchStatus   = filterStatus.value   === 'all' || item.status   === filterStatus.value
     const matchCategory = filterCategory.value === 'all' || item.category === filterCategory.value
     const matchSearch   = !search.value || item.name.toLowerCase().includes(search.value.toLowerCase())
-    return matchStatus && matchCategory && matchSearch
+    const matchCompleted = !hideCompleted.value || item.status !== 'purchased'
+    return matchStatus && matchCategory && matchSearch && matchCompleted
   })
 })
 
@@ -70,7 +72,7 @@ function onCancel() {
 
     <!-- Filters -->
     <div class="card mb-5">
-      <div class="flex flex-wrap gap-3">
+      <div class="flex flex-wrap items-center gap-3">
         <input v-model="search" class="input max-w-xs" placeholder="🔍 搜尋物品名稱…" />
         <select v-model="filterStatus"   class="input w-auto">
           <option value="all">所有狀態</option>
@@ -83,6 +85,10 @@ function onCancel() {
           <option value="essential">必需品</option>
           <option value="non_essential">非必需品</option>
         </select>
+        <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer ml-auto">
+          <input type="checkbox" v-model="hideCompleted" class="w-4 h-4 rounded border-gray-300 text-primary-500 focus:ring-primary-500" />
+          隱藏已購買
+        </label>
       </div>
     </div>
 

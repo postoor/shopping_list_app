@@ -11,12 +11,17 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 # ── 密碼 ──────────────────────────────────────────────────────────────────
+def _truncate_password(plain: str) -> bytes:
+    """Truncate password to 72 bytes (bcrypt limit)."""
+    return plain.encode("utf-8")[:72]
+
+
 def hash_password(plain: str) -> str:
-    return pwd_context.hash(plain)
+    return pwd_context.hash(_truncate_password(plain))
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain, hashed)
+    return pwd_context.verify(_truncate_password(plain), hashed)
 
 
 # ── JWT ───────────────────────────────────────────────────────────────────
@@ -42,7 +47,9 @@ def create_refresh_token(user_id: str) -> str:
 
 def decode_token(token: str) -> dict[str, Any]:
     try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
         return payload
     except JWTError:
         raise HTTPException(
